@@ -1,0 +1,32 @@
+{{- /*gotype: github.com/blackmarllbor0/todo_go/models.Post*/ -}}
+{{ define "write" }}
+
+{{  template "header" }}
+
+<div class="container">
+    <form class="col" method="post" action="/SavePost" role="form">
+        <input type="hidden" name="id" id="id" value="{{ .Id }}">
+        <div class="row">
+            <label for="title" class="col-form-label">
+                Title
+                <input type="text" name="title" id="title" value="{{ .Title }}" class="form-control">
+            </label>
+        </div>
+        <div class="row">
+            <label for="content" class="col-form-label">
+                Content
+                <textarea rows="10" name="content" id="content" class="form-control">
+                    {{ .Content }}
+                </textarea>
+            </label>
+        </div>
+        <div class="row gap-2">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="/delete?id" class="btn btn-danger">Delete</a>
+        </div>
+    </form>
+</div>
+
+{{ template "footer"}}
+
+{{ end }}
