@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/blackmarllbor0/todo_go/models"
+	"github.com/blackmarllbor0/template_todo_server_in_go/models"
 	"log"
 	"net/http"
 )
@@ -25,7 +25,7 @@ func main() {
 
 	// обработка создания стилей в index.html из папки assets
 	//http.Handle(assets, http.StripPrefix(assets, http.FileServer(http.Dir("."+assets))))
-	
+
 	// обработчики путей
 	http.HandleFunc("/", indexHandler)            // главный обработчик
 	http.HandleFunc("/write", writerHandler)      // обработчик записи

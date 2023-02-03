@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/blackmarllbor0/todo_go/models"
+	"github.com/blackmarllbor0/template_todo_server_in_go/models"
 	"net/http"
 )
 
