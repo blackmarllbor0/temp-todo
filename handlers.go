@@ -2,30 +2,29 @@ package main
 
 import (
 	"github.com/blackmarllbor0/template_todo_server_in_go/models"
+	"github.com/go-martini/martini"
+	"github.com/martini-contrib/render"
 	"net/http"
 )
 
 // template const's
 const (
-	index  = "templates/index.html"
-	header = "templates/header.html"
-	footer = "templates/footer.html"
-	writer = "templates/write.html"
-	assets = "/assets/"
+	index = "index"
+	write = "write"
 )
 
 // indexHandler парсит главную страницу
-func indexHandler(w http.ResponseWriter, _ *http.Request) {
-	generateTemplate(w, index, "index", posts)
+func indexHandler(rnd render.Render) {
+	rnd.HTML(http.StatusOK, index, posts)
 }
 
 // writerHandler парсит страницу ввода данных
-func writerHandler(w http.ResponseWriter, _ *http.Request) {
-	generateTemplate(w, writer, "write", nil)
+func writerHandler(rnd render.Render) {
+	rnd.HTML(http.StatusOK, write, nil)
 }
 
 // savePostHandler создает и сохраняет полученные из ввода данные
-func savePostHandler(w http.ResponseWriter, r *http.Request) {
+func savePostHandler(rnd render.Render, w http.ResponseWriter, r *http.Request) {
 	// получаем теги формы
 	id := r.FormValue("id")
 	title := r.FormValue("title")
@@ -45,28 +44,31 @@ func savePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// перенаправляем на страницу с уже созданными постами
-	http.Redirect(w, r, "/", http.StatusFound)
+	rnd.Redirect("/")
 }
 
 // editHandler обновляет запись в хранилище
-func editHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.FormValue("Id")  // получаем id элемента из request
+func editHandler(rnd render.Render, params martini.Params) {
+	id := params["id"] // получаем id элемента из request
+
 	post, found := posts[id] // ищем в базе по id
 	if !found {
-		http.NotFound(w, r)
+		rnd.Redirect("/")
+		return
 	}
 
-	generateTemplate(w, writer, "write", post) // передаем этот пост в date
+	rnd.HTML(http.StatusOK, write, post) // передаем этот пост в date
 }
 
 // deleteHandler удаляет пост из хранилища
-func deleteHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.FormValue("Id")
+func deleteHandler(rnd render.Render, params martini.Params) {
+	id := params["id"]
 	if id == "" {
-		http.NotFound(w, r)
+		rnd.Redirect("/")
+		return
 	}
 
 	delete(posts, id) // удаляем пост из базы
 
-	generateTemplate(w, index, "index", posts)
+	rnd.HTML(http.StatusOK, index, posts)
 }

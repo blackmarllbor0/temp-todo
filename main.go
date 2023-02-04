@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/blackmarllbor0/template_todo_server_in_go/models"
-	"log"
-	"net/http"
+	"github.com/go-martini/martini"
+	"github.com/martini-contrib/render"
 )
 
 // server const's
 const (
-	serverHost = "http://localhost"
 	serverPort = ":8080"
 )
 
@@ -17,24 +15,29 @@ const (
 var posts models.Posts
 
 func main() {
-	// вывод
-	fmt.Println("The server is listen on", serverHost+serverPort)
-
 	// инициализируем хранилище
 	posts = make(map[string]*models.Post, 0)
 
-	// обработка создания стилей в index.html из папки assets
-	//http.Handle(assets, http.StripPrefix(assets, http.FileServer(http.Dir("."+assets))))
+	m := martini.Classic() // create new object
+	// middleware для упрощения работы с html и json
+	m.Use(render.Renderer(render.Options{
+		Directory:  "templates",
+		Layout:     "layout",
+		Extensions: []string{".tmpl", ".html"},
+		//Funcs:      []template.FuncMap(nil),
+		Charset:    "UTF-8",
+		IndentJSON: true,
+	}))
+
+	//m.Use(martini.Static("assets", martini.StaticOptions{Prefix: "assets"}))
 
 	// обработчики путей
-	http.HandleFunc("/", indexHandler)            // главный обработчик
-	http.HandleFunc("/write", writerHandler)      // обработчик записи
-	http.HandleFunc("/SavePost", savePostHandler) // обработчик сохранения записей
-	http.HandleFunc("/edit", editHandler)         // обработчик обновления данных в посте
-	http.HandleFunc("/delete", deleteHandler)     // обработчик удаления поста
+	m.Get("/", indexHandler)             // главный обработчик
+	m.Get("/write", writerHandler)       // обработчик записи
+	m.Post("/SavePost", savePostHandler) // обработчик сохранения записей
+	m.Get("/edit/:id", editHandler)      // обработчик обновления данных в посте
+	m.Get("/delete/:id", deleteHandler)  // обработчик удаления поста
 
 	// запуск сервера
-	if err := http.ListenAndServe(serverPort, nil); err != nil {
-		log.Fatal("There was an error when starting the server\n", err)
-	}
+	m.RunOnAddr(serverPort)
 }
