@@ -4,6 +4,7 @@ import (
 	"github.com/blackmarllbor0/template_todo_server_in_go/models"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
+	"log"
 	"net/http"
 )
 
@@ -41,6 +42,9 @@ func savePostHandler(rnd render.Render, w http.ResponseWriter, r *http.Request) 
 		id = GenerateId()
 		post = models.NewPost(id, title, content)
 		posts[post.Id] = post
+		if _, err := collection.InsertOne(ctx, post); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// перенаправляем на страницу с уже созданными постами
