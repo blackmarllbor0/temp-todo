@@ -5,9 +5,14 @@ services:
     container_name: go-mongo
     image: mongo
     restart: always
+<<<<<<< HEAD
     environment:
       MONGO_INITDB_ROOT_DADABASE: root
     ports:
       - "27017:27017"
     command:
       - mongod
+=======
+    ports:
+      - "27017:27017"
+>>>>>>> origin/main
