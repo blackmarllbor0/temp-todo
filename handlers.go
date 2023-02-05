@@ -1,13 +1,15 @@
 package main
 
 import (
+	"github.com/blackmarllbor0/template_todo_server_in_go/db/documents"
 	"github.com/blackmarllbor0/template_todo_server_in_go/models"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
+	"log"
 	"net/http"
 )
 
-// template const's
+// template name const's
 const (
 	index = "index"
 	write = "write"
@@ -15,6 +17,17 @@ const (
 
 // indexHandler парсит главную страницу
 func indexHandler(rnd render.Render) {
+	var postDoc []documents.Post
+	if err := postsCollection.Find(nil).All(&postDoc); err != nil {
+		log.Fatal(err)
+	}
+
+	var posts = make(models.Posts, len(postDoc))
+	for _, doc := range postDoc {
+		post := models.Post{Id: doc.Id, Title: doc.Title, Content: doc.Content}
+		posts = append(posts, post)
+	}
+
 	rnd.HTML(http.StatusOK, index, posts)
 }
 
@@ -24,23 +37,23 @@ func writerHandler(rnd render.Render) {
 }
 
 // savePostHandler создает и сохраняет полученные из ввода данные
-func savePostHandler(rnd render.Render, w http.ResponseWriter, r *http.Request) {
+func savePostHandler(rnd render.Render, r *http.Request) {
 	// получаем теги формы
 	id := r.FormValue("id")
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 
-	var post *models.Post
-
+	postDoc := documents.Post{Id: id, Title: title, Content: content}
 	// если id не имеет нулевое значение, то обновляем объект (/edit)
 	if id != "" {
-		post = posts[id]
-		post.Title = title
-		post.Content = content
+		if err := postsCollection.UpdateId(id, postDoc); err != nil {
+			log.Fatal(err)
+		}
 	} else { // иначе создаем новый (/SavePost)
-		id = GenerateId()
-		post = models.NewPost(id, title, content)
-		posts[post.Id] = post
+		postDoc.Id = GenerateId()
+		if err := postsCollection.Insert(postDoc); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// перенаправляем на страницу с уже созданными постами
@@ -51,10 +64,16 @@ func savePostHandler(rnd render.Render, w http.ResponseWriter, r *http.Request) 
 func editHandler(rnd render.Render, params martini.Params) {
 	id := params["id"] // получаем id элемента из request
 
-	post, found := posts[id] // ищем в базе по id
-	if !found {
-		rnd.Redirect("/")
+	postDocument := documents.Post{}
+	if err := postsCollection.FindId(id).One(&postDocument); err != nil {
+		rnd.Redirect(index)
 		return
+	}
+
+	post := models.Post{
+		Id:      postDocument.Id,
+		Title:   postDocument.Title,
+		Content: postDocument.Content,
 	}
 
 	rnd.HTML(http.StatusOK, write, post) // передаем этот пост в date
@@ -68,7 +87,10 @@ func deleteHandler(rnd render.Render, params martini.Params) {
 		return
 	}
 
-	delete(posts, id) // удаляем пост из базы
+	// удаляем пост из базы
+	if err := postsCollection.RemoveId(id); err != nil {
+		log.Fatal(err)
+	}
 
-	rnd.HTML(http.StatusOK, index, posts)
+	rnd.Redirect("/")
 }
