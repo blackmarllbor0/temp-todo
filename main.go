@@ -1,22 +1,19 @@
 package main
 
 import (
-	"github.com/blackmarllbor0/template_todo_server_in_go/models"
+	"github.com/blackmarllbor0/template_todo_server_in_go/database"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 )
 
 // server const's
-const (
-	serverPort = ":8080"
-)
-
-// Временное хранилище данных
-var posts models.Posts
+const serverPort = ":8080"
 
 func main() {
-	// инициализируем хранилище
-	posts = make(map[string]*models.Post, 0)
+	// подключение к базе данных
+	database.ConnectDB()
+	// отключение от базы данных
+	defer database.Disconnect()
 
 	m := martini.Classic() // create new object
 	// middleware для упрощения работы с html и json
@@ -24,7 +21,6 @@ func main() {
 		Directory:  "templates",
 		Layout:     "layout",
 		Extensions: []string{".tmpl", ".html"},
-		//Funcs:      []template.FuncMap(nil),
 		Charset:    "UTF-8",
 		IndentJSON: true,
 	}))
