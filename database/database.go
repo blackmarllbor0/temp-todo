@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	url            = "mongodb://localhost:27017"
-	DatabaseName   = "go-todo"
+	url          = "mongodb://localhost:27017"
+	DatabaseName = "go-todo"
+
 	CollectionName = "post"
 )
 
