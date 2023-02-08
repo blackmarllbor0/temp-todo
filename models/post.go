@@ -1,7 +1,7 @@
 package models
 
 type Post struct {
-	Id      string `bson:"_id"`
+	Id      string
 	Title   string
 	Content string
 }
@@ -9,5 +9,3 @@ type Post struct {
 func NewPost(id, title, content string) *Post {
 	return &Post{id, title, content}
 }
-
-type Posts map[string]*Post
