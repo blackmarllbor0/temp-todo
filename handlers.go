@@ -1,17 +1,20 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/blackmarllbor0/template_todo_server_in_go/database"
 	"github.com/blackmarllbor0/template_todo_server_in_go/models"
+	"github.com/blackmarllbor0/template_todo_server_in_go/utils"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
-	"net/http"
 )
 
 // template const's
 const (
 	index = "index"
 	write = "write"
+	login = "login"
 )
 
 // indexHandler парсит главную страницу
@@ -35,7 +38,7 @@ func savePostHandler(rnd render.Render, r *http.Request) {
 		database.UpdateById(id, title, content)
 	} else {
 		// иначе создаем новый (/SavePost)
-		database.InsertOne(models.NewPost(GenerateId(), title, content))
+		database.InsertOne(models.NewPost(utils.GenerateId(), title, content))
 	}
 
 	// перенаправляем на страницу с уже созданными постами
@@ -62,4 +65,16 @@ func deleteHandler(rnd render.Render, params martini.Params) {
 		database.DeleteById(id)
 		rnd.HTML(http.StatusOK, index, database.FindAll())
 	}
+}
+
+// getLoginHandler рендерит страницу входа
+func getLoginHandler(rnd render.Render) {
+	rnd.HTML(http.StatusOK, login, nil)
+}
+
+func postLoginHandler(rnd render.Render, r *http.Request) {
+	//username := r.FormValue("username")
+	//password := r.FormValue("password")
+
+	rnd.Redirect("/")
 }
