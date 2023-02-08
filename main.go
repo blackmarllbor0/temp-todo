@@ -41,7 +41,9 @@ func main() {
 	m.Post("/SavePost", savePostHandler) // обработчик сохранения записей
 	m.Get("/edit/:id", editHandler)      // обработчик обновления данных в посте
 	m.Get("/delete/:id", deleteHandler)  // обработчик удаления поста
+	m.Get("/login", getLoginHandler)     // обработчик логина
+	m.Post("/login", postLoginHandler)
 
 	// запуск сервера
-	m.RunOnAddr(os.Getenv("PORT"))
+	m.RunOnAddr(":" + os.Getenv("PORT"))
 }
