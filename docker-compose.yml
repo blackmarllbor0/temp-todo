@@ -5,8 +5,10 @@ services:
     container_name: go-mongo
     image: mongo
     restart: always
+    env_file:
+      - .env
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=blackmarllbor0
-      - MONGO_INITDB_ROOT_PASSWORD=funcConnect()
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER_NAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_USER_PASSWORD}
     ports:
       - "27017:27017"

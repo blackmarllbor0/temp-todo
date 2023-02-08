@@ -1,15 +1,21 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/blackmarllbor0/template_todo_server_in_go/database"
 	"github.com/go-martini/martini"
+	"github.com/joho/godotenv"
 	"github.com/martini-contrib/render"
 )
 
-// server const's
-const serverPort = ":8080"
-
 func main() {
+	// загрузка .env переменных
+	if err := godotenv.Load(); err != nil {
+		log.Fatal(err)
+	}
+
 	// подключение к базе данных
 	database.ConnectDB()
 	// отключение от базы данных
@@ -35,5 +41,5 @@ func main() {
 	m.Get("/delete/:id", deleteHandler)  // обработчик удаления поста
 
 	// запуск сервера
-	m.RunOnAddr(serverPort)
+	m.RunOnAddr(":" + os.Getenv("PORT"))
 }
