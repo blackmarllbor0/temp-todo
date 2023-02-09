@@ -5,16 +5,22 @@ import (
 	"os"
 
 	"github.com/blackmarllbor0/template_todo_server_in_go/database"
+	"github.com/blackmarllbor0/template_todo_server_in_go/session"
+
 	"github.com/go-martini/martini"
 	"github.com/joho/godotenv"
 	"github.com/martini-contrib/render"
 )
+
+var inMemorySsesion *session.Session // храним сессию в оператианой паияти
 
 func main() {
 	// загрузка .env переменных
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
+
+	inMemorySsesion = session.NewSession() // create a new session
 
 	// подключение к базе данных
 	database.ConnectDB()
@@ -40,7 +46,7 @@ func main() {
 	m.Get("/edit/:id", editHandler)      // обработчик обновления данных в посте
 	m.Get("/delete/:id", deleteHandler)  // обработчик удаления поста
 	m.Get("/login", getLoginHandler)     // обработчик логина
-	m.Post("/login", postLoginHandler)
+	m.Post("/login", postLoginHandler)   // добовляем id сессии
 
 	// запуск сервера
 	m.RunOnAddr(":" + os.Getenv("PORT"))

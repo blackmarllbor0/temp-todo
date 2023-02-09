@@ -19,11 +19,21 @@ func NewSession() *Session {
 	return s
 }
 
-func (s *Session) init(username string) string {
+func (s *Session) Init(username string) string {
 	sessionId := utils.GenerateId()
 
 	data := &Data{username}
 	s.data[sessionId] = data
 
 	return sessionId
+}
+
+func (s *Session) Get(sessionId string) string {
+	data := s.data[sessionId]
+
+	if data == nil {
+		return ""
+	}
+
+	return data.Username
 }

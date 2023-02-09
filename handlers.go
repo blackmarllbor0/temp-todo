@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/blackmarllbor0/template_todo_server_in_go/database"
 	"github.com/blackmarllbor0/template_todo_server_in_go/models"
 	"github.com/blackmarllbor0/template_todo_server_in_go/utils"
+
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 )
@@ -15,10 +18,18 @@ const (
 	index = "index"
 	write = "write"
 	login = "login"
+
+	COOKIE_NAME = "sessionId"
 )
 
 // indexHandler парсит главную страницу
-func indexHandler(rnd render.Render) {
+func indexHandler(rnd render.Render, r *http.Request) {
+	cookie, _ := r.Cookie(COOKIE_NAME)
+	if cookie != nil {
+		fmt.Println(r.Cookie(inMemorySsesion.Get(cookie.Value)))
+		fmt.Println(cookie)
+	}
+
 	rnd.HTML(http.StatusOK, index, database.FindAll())
 }
 
@@ -72,9 +83,20 @@ func getLoginHandler(rnd render.Render) {
 	rnd.HTML(http.StatusOK, login, nil)
 }
 
-func postLoginHandler(rnd render.Render, r *http.Request) {
-	//username := r.FormValue("username")
-	//password := r.FormValue("password")
+// postLoginHandler авторизует пользователя через сессию
+func postLoginHandler(rnd render.Render, w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	// password := r.FormValue("password")
+
+	sessionId := inMemorySsesion.Init(username)
+
+	cookie := &http.Cookie{
+		Name:    COOKIE_NAME,
+		Value:   sessionId,
+		Expires: time.Now().Add(5 * time.Minute),
+	}
+
+	http.SetCookie(w, cookie)
 
 	rnd.Redirect("/")
 }
