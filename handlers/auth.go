@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"net/http"
-	"time"
 
+	"github.com/blackmarllbor0/template_todo_server_in_go/session"
 	"github.com/martini-contrib/render"
 )
 
@@ -13,18 +13,11 @@ func GetLoginHandler(rnd render.Render) {
 }
 
 // postLoginHandler авторизует пользователя через сессию
-func PostLoginHandler(rnd render.Render, w http.ResponseWriter, r *http.Request) {
+func PostLoginHandler(rnd render.Render, w http.ResponseWriter, r *http.Request, session *session.Session) {
 	username := r.FormValue("username")
 
-	sessionId := inMemorySsesion.Init(username)
-
-	cookie := &http.Cookie{
-		Name:    COOKIE_NAME,
-		Value:   sessionId,
-		Expires: time.Now().Add(5 * time.Minute),
-	}
-
-	http.SetCookie(w, cookie)
+	session.Username = username
+	session.IsAuth = true
 
 	rnd.Redirect("/")
 }

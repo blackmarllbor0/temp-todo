@@ -1,20 +1,19 @@
 package handlers
 
 import (
-	"fmt"
+	"github.com/blackmarllbor0/template_todo_server_in_go/database/models"
+	"github.com/blackmarllbor0/template_todo_server_in_go/session"
 	"net/http"
 
 	"github.com/blackmarllbor0/template_todo_server_in_go/database"
 	"github.com/martini-contrib/render"
 )
 
-// indexHandler парсит главную страницу
-func IndexHandler(rnd render.Render, r *http.Request) {
-	cookie, _ := r.Cookie(COOKIE_NAME)
-	if cookie != nil {
-		fmt.Println(r.Cookie(inMemorySsesion.Get(cookie.Value)))
-		fmt.Println(cookie)
-	}
+// IndexHandler парсит главную страницу
+func IndexHandler(rnd render.Render, r *http.Request, session *session.Session) {
+	model := models.PostList{}
+	model.IsAuth = session.IsAuth
+	model.Posts = database.FindAll()
 
 	rnd.HTML(http.StatusOK, index, database.FindAll())
 }

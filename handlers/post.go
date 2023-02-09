@@ -4,18 +4,19 @@ import (
 	"net/http"
 
 	"github.com/blackmarllbor0/template_todo_server_in_go/database"
-	"github.com/blackmarllbor0/template_todo_server_in_go/models"
+	"github.com/blackmarllbor0/template_todo_server_in_go/database/models"
 	"github.com/blackmarllbor0/template_todo_server_in_go/utils"
+
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 )
 
-// writerHandler парсит страницу ввода данных
+// WriterHandler парсит страницу ввода данных
 func WriterHandler(rnd render.Render) {
 	rnd.HTML(http.StatusOK, write, nil)
 }
 
-// savePostHandler создает и сохраняет полученные из ввода данные
+// SavePostHandler создает и сохраняет полученные из ввода данные
 func SavePostHandler(rnd render.Render, r *http.Request) {
 	// получаем теги формы
 	title := r.FormValue("title")
@@ -33,7 +34,7 @@ func SavePostHandler(rnd render.Render, r *http.Request) {
 	rnd.Redirect("/")
 }
 
-// editHandler обновляет запись в хранилище
+// EditHandler обновляет запись в хранилище
 func EditHandler(rnd render.Render, params martini.Params) {
 	var post models.Post
 	if err := database.FindById(params["id"], &post); err != nil {
@@ -44,7 +45,7 @@ func EditHandler(rnd render.Render, params martini.Params) {
 	rnd.HTML(http.StatusOK, write, post) // передаем этот пост в date
 }
 
-// deleteHandler удаляет пост из хранилища
+// DeleteHandler удаляет пост из хранилища
 func DeleteHandler(rnd render.Render, params martini.Params) {
 	if id := params["id"]; id == "" {
 		rnd.Redirect("/")

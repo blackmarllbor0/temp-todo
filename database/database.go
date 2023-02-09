@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/blackmarllbor0/template_todo_server_in_go/models"
+	"github.com/blackmarllbor0/template_todo_server_in_go/database/models"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

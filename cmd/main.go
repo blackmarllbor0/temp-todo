@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/blackmarllbor0/template_todo_server_in_go/session"
 	"log"
 	"os"
 
@@ -30,6 +31,8 @@ func main() {
 		Charset:    "UTF-8",
 		IndentJSON: true,
 	}))
+
+	m.Use(session.Middleware)
 
 	m.Get("/", h.IndexHandler) // главный обработчик
 

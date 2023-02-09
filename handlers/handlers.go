@@ -10,4 +10,4 @@ const (
 	COOKIE_NAME = "sessionId" // cookie name
 )
 
-var inMemorySsesion = session.NewSession() // храним сессию в оператианой паияти
+var inMemorySsesion = session.NewSessionStore() // храним сессию в оператианой паияти
